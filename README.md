@@ -1,44 +1,103 @@
-# Criador de robôs de atendimento
+# Bot Analyser — Criador de robôs de atendimento
 
-Interface React + TypeScript e backend Node.js + TypeScript para criar roteiros estruturados de robôs V3 da Digisac. A geração é determinística: o compilador transforma o roteiro em JSON e valida seus caminhos e destinos.
+Editor visual para transformar um roteiro de atendimento em um robô V3 da Digisac. A pessoa monta menus, mensagens, transferências e regras; o sistema valida o roteiro, simula a conversa e gera uma prévia JSON.
 
-## Executar
+O projeto concentra a criação e a revisão do fluxo em uma interface. O compilador é determinístico: a geração do JSON usa regras de domínio, sem chamadas a modelos de IA.
 
-Requer Node.js 24.13.1 ou outra versão 24 compatível com `package.json`.
+## Funcionalidades
+
+- Criação guiada por perguntas ou edição direta dos caminhos do atendimento.
+- Menus e submenus, mensagens, transferências para departamentos e encerramento.
+- Regras de entrada, horário, feriados, inatividade e avaliação após fechamento.
+- Mapa do fluxo, revisão de pendências e simulação local da conversa.
+- Rascunhos no navegador, separados por conta e origem.
+- Consulta de departamentos, atendentes e avaliações de uma conta conectada.
+- Validação, exportação JSON e envio autenticado para criar um robô.
+
+## Tecnologias e arquitetura
+
+| Camada    | Tecnologias                                           |
+| --------- | ----------------------------------------------------- |
+| Interface | React, TypeScript, Vite                               |
+| Backend   | Node.js 24, TypeScript                                |
+| Domínio   | Contratos, validação e compilação determinística      |
+| Qualidade | Test runner do Node, TypeScript, Prettier, Playwright |
+
+```mermaid
+flowchart LR
+    Editor[Editor React] --> API[API Node.js]
+    API --> Domain[Validação e compilação]
+    Domain --> Preview[Prévia JSON]
+    API --> Catalog[Catálogo fictício ou conta conectada]
+    Preview --> Export[Exportação ou envio autenticado]
+```
+
+A interface edita o roteiro; o backend consulta o catálogo e executa as regras de domínio. A simulação percorre o roteiro localmente. A integração externa fica separada do compilador.
+
+## Instalação
+
+Requisitos: Git, npm e Node.js 24 compatível com `package.json`. A versão indicada em `.node-version` é 24.13.1.
 
 ```sh
+git clone https://github.com/NicolasLimao/bot_analyser-publico.git
+cd bot_analyser-publico
 npm ci
 npm run build
 npm start
 ```
 
-Abra http://127.0.0.1:3001. Para desenvolvimento, use `npm run dev:api` e `npm run dev:web` em terminais separados. A interface de desenvolvimento fica em http://127.0.0.1:5173.
+Abra **http://127.0.0.1:3001**.
 
-## Dados de demonstração
+### Experimentar sem conta
 
-Na tela inicial, escolha **Experimentar com dados de demonstração**. Os dois catálogos locais são fictícios; o catálogo identificado como `snapshot` mantém esse nome de perfil por compatibilidade, mas seus 12 departamentos e identificadores foram inventados para esta edição. Ele não contém usuários nem consulta uma conta real.
+1. Escolha **Experimentar com dados de demonstração** na tela inicial.
+2. Abra um modelo ou crie um roteiro; ajuste mensagens, opções e destinos.
+3. Use a simulação para percorrer os caminhos e a revisão para resolver pendências.
+4. Exporte a prévia JSON para inspecionar o resultado.
 
-O roteiro inicial, os catálogos e os testes usam os mesmos identificadores sintéticos. Para consultar sua conta, informe a instância e suas próprias credenciais pela interface. Senha e token não entram no roteiro exportado; as sessões ficam na memória do servidor e expiram ou desaparecem ao reiniciar.
+Os dois catálogos são fictícios. O perfil `snapshot` mantém esse nome por compatibilidade, mas seus 12 departamentos e identificadores foram inventados para esta edição. Ele não contém usuários nem consulta uma conta real.
 
-## Funcionalidades e limites
+Para usar a integração, conecte uma instância com suas próprias credenciais pela interface. Senha e token não entram no roteiro exportado; as sessões ficam na memória do servidor e desaparecem ao expirar ou reiniciar o processo.
 
-- Criação guiada ou manual, edição por caminhos, revisão do mapa e simulação local de conversa.
-- Consulta de departamentos, usuários e avaliações da conta conectada.
-- Validação do roteiro, exportação JSON e envio autenticado para criar um robô na conta escolhida.
-- Regras de entrada, horário, feriados, inatividade de chamado, despedida e avaliação após fechamento.
-- Rascunhos locais no navegador, separados por conta e origem.
+## Desenvolvimento e configuração
 
-A geração V3 permanece experimental (`importReady: false`). A simulação valida o roteiro e não emula a plataforma. Aceitar o POST não ativa canais nem comprova o funcionamento do robô. Mudanças de prazo da empresa exigem conexão autorizada e podem afetar outros atendimentos; os detalhes estão nas specs.
+Em dois terminais, na raiz do projeto:
 
-Importação Word, migração de legado e documentação Word não fazem parte do caminho implementado. Exportações de contas e documentos operacionais não acompanham esta edição.
+```sh
+# Terminal 1
+npm run dev:api
+```
 
-## Configuração e hospedagem
+```sh
+# Terminal 2
+npm run dev:web
+```
 
-Use `.env.example` apenas como referência; `.env` fica local e é ignorado pelo Git. O projeto inclui um exemplo de configuração Square Cloud: escolha seu próprio subdomínio e configure `PUBLIC_ORIGIN` com a origem HTTPS efetivamente usada. Os domínios dos exemplos desta edição são fictícios.
+A interface de desenvolvimento fica em **http://127.0.0.1:5173**. Use [.env.example](.env.example) como referência para um `.env` local, caso precise alterar a configuração.
 
-Em produção, as sessões usam cookies Secure e a origem das escritas é verificada. A configuração de hospedagem deve preservar `Host` e HTTPS. Não copie credenciais, bancos, exportações de contas ou documentos preenchidos para o repositório.
+| Variável        | Uso                                                      |
+| --------------- | -------------------------------------------------------- |
+| `HOST`          | Endereço do servidor; no desenvolvimento, `127.0.0.1`    |
+| `PORT`          | Porta; no desenvolvimento, `3001`                        |
+| `NODE_ENV`      | Seleciona o comportamento de desenvolvimento ou produção |
+| `PUBLIC_ORIGIN` | Origem HTTPS pública, sem caminho, para a hospedagem     |
 
-## Verificações
+O login da interface não usa as variáveis legadas `DIGISAC_*` do exemplo. O arquivo `squarecloud.app` é uma referência de hospedagem: escolha seu próprio subdomínio e configure a origem HTTPS efetiva. Sessões em produção usam cookies Secure; o proxy deve preservar Host e HTTPS.
+
+## Estrutura
+
+```text
+src/domain/      contratos, validações, simulação e compilação
+src/digisac/     integração com a plataforma
+src/server.ts   API e perfis de catálogo
+web/            interface React
+examples/       roteiros e catálogos fictícios
+specs/          requisitos e contratos das funcionalidades
+estudos/        arquitetura, laboratório e exercícios
+tests/          testes unitários e cenários de navegador
+```
+
+## Testes
 
 ```sh
 npm run check
@@ -48,12 +107,20 @@ npx playwright install chrome
 npm run test:e2e
 ```
 
-A suíte usa fixtures sintéticas e transportes simulados. Esses checks não substituem homologação na sua conta. `.gitattributes` fixa finais de linha LF para as cópias de trabalho e a verificação de formatação, inclusive no Windows.
+`check` reúne formatação, verificação de tipos e testes unitários. Os cenários de navegador usam fixtures sintéticas e cobrem desktop e mobile. A integração real deve ser homologada na conta de destino.
+
+## Estado e limitações
+
+A prévia V3 é experimental (`importReady: false`). A simulação não emula a plataforma; um POST aceito não comprova ativação de canais nem o funcionamento completo do robô. Mudanças de inatividade na conta conectada podem afetar outros atendimentos e exigem revisão do operador.
+
+Importação Word, migração de robôs legados e geração de documentação Word são propostas, ainda fora do caminho implementado. Documentos preenchidos e exportações de contas não acompanham esta edição.
 
 ## Documentação
 
-- [Arquitetura e estudos](estudos/README.md)
+- [Arquitetura e laboratório](estudos/README.md)
 - [Produto](PRODUCT.md) e [sistema visual](DESIGN.md)
 - [Contrato de catálogo](specs/002-catalogo-digisac.md)
 - [Conexão e envio](specs/005-conexao-digisac.md)
-- [Preparação da edição pública](PUBLICATION.md)
+- [Dados locais e política da edição pública](PUBLICATION.md)
+
+Desenvolvido por [NicolasLimao](https://github.com/NicolasLimao).
