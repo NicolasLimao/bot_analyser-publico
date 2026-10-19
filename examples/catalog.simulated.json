@@ -1,0 +1,54 @@
+{
+  "accountId": "demo-account",
+  "source": "simulated",
+  "fetchedAt": "2026-09-09T12:00:00.000Z",
+  "complete": true,
+  "departments": [
+    {
+      "id": "demo-sales",
+      "name": "Comercial — demonstração",
+      "active": true
+    },
+    {
+      "id": "demo-support",
+      "name": "Suporte — demonstração",
+      "active": true
+    }
+  ],
+  "users": [
+    {
+      "id": "demo-user-1",
+      "name": "Alex — demonstração",
+      "active": true,
+      "departmentIds": [
+        "demo-sales"
+      ]
+    },
+    {
+      "id": "demo-user-2",
+      "name": "Alex — demonstração",
+      "active": true,
+      "departmentIds": [
+        "demo-support"
+      ]
+    }
+  ],
+  "questions": {
+    "state": "ready",
+    "items": [
+      {
+        "id": "demo-csat",
+        "name": "Satisfação — demonstração",
+        "active": true,
+        "accountId": "demo-account",
+        "type": "csat",
+        "questionMessage": "Como você avalia nosso atendimento?\n\n5 - Muito satisfeito\n4 - Satisfeito\n3 - Neutro\n2 - Insatisfeito\n1 - Muito insatisfeito",
+        "duration": 30,
+        "tries": 3,
+        "successMessage": "Agradecemos sua avaliação!",
+        "invalidMessage": "Digite uma nota de 1 a 5.",
+        "reasonMessage": ""
+      }
+    ]
+  }
+}

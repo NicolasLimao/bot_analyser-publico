@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "triagem-demo",
+  "name": "Triagem de demonstração",
+  "accountId": "demo-account",
+  "entryNodeId": "welcome",
+  "nodes": [
+    {
+      "id": "welcome",
+      "kind": "menu",
+      "message": "Olá {{contact_name}}! Como podemos ajudar?",
+      "options": [
+        { "id": "commercial", "value": "1", "label": "Comercial", "target": "commercial-menu" },
+        { "id": "support", "value": "2", "label": "Suporte", "target": "transfer-support" }
+      ]
+    },
+    {
+      "id": "commercial-menu",
+      "kind": "menu",
+      "message": "Escolha uma opção:",
+      "options": [
+        { "id": "sales", "value": "1", "label": "Falar com o comercial", "target": "transfer-sales" },
+        { "id": "back", "value": "0", "label": "Voltar ao início", "target": "welcome" }
+      ]
+    },
+    { "id": "transfer-sales", "kind": "transfer", "departmentId": "demo-sales", "userId": "demo-user-1", "next": "waiting" },
+    { "id": "transfer-support", "kind": "transfer", "departmentId": "demo-support", "userId": null, "next": "waiting" },
+    { "id": "waiting", "kind": "message", "text": "Aguarde. Em breve nossa equipe continuará seu atendimento.", "next": "end" },
+    { "id": "end", "kind": "stop" }
+  ]
+}
